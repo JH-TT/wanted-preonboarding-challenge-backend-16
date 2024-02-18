@@ -1,4 +1,4 @@
-package com.wanted.preonboarding.model;
+package com.wanted.preonboarding.model.performance;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
