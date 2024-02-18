@@ -1,6 +1,6 @@
 package com.wanted.preonboarding.repository;
 
-import com.wanted.preonboarding.model.Reservation;
+import com.wanted.preonboarding.model.reservation.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
