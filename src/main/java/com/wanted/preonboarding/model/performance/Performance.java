@@ -5,31 +5,32 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Table
 @Builder
-//@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
+@ToString
 public class Performance {
     @Id
-//    @GeneratedValue(generator = "uuid2")
-//    @Column(columnDefinition = "BINARY(16)", nullable = false)
+    @GeneratedValue(generator = "uuid2")
+    @Column(columnDefinition = "BINARY(16)", nullable = false)
     private UUID id;
     @Column(name = "name", nullable = false)
     private String name;
@@ -43,10 +44,18 @@ public class Performance {
     private LocalDateTime startDate;
     @Column(name = "is_reserve", nullable = false, columnDefinition = "VARCHAR(255) default 'disable'")
     private String isReserve;
-//    @CreatedDate
-//    @Column(name = "created_at")
-//    private LocalDateTime createdAt;
-//    @LastModifiedDate
-//    @Column(name = "updated_at")
-//    private LocalDateTime updatedAt;
+
+    @OneToMany
+    @JoinColumn(name = "performance_id")
+    @Builder.Default
+    private List<PerformanceSeatInfo> seats = new ArrayList<>();
+
+    public void reserveSeat(PerformanceSeatInfo seatInfo) {
+        this.seats.add(seatInfo);
+        seatInfo.updatePerformance(this);
+    }
+
+    public List<PerformanceSeatInfo> getReserveSeat() {
+        return Collections.unmodifiableList(seats);
+    }
 }

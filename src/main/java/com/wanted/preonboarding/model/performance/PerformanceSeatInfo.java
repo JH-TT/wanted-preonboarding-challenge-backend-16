@@ -1,5 +1,6 @@
 package com.wanted.preonboarding.model.performance;
 
+import com.wanted.preonboarding.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -9,22 +10,21 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.ToString;
+import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
+@Table
+@ToString(exclude = "performance")
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 public class PerformanceSeatInfo {
 
     @Id
@@ -32,7 +32,7 @@ public class PerformanceSeatInfo {
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "performance_id", columnDefinition = "BINARY(16)", nullable = false)
+    @JoinColumn(name = "performance_id", columnDefinition = "BINARY(16)")
     private Performance performance;
 
     @Column(nullable = false)
@@ -48,13 +48,7 @@ public class PerformanceSeatInfo {
     private int seat;
 
     @Column(columnDefinition = "VARCHAR(255) default 'enable'")
-    @ColumnDefault("enable")
     private String isReserve;
-
-//    @CreatedDate
-//    private LocalDateTime createdAt;
-//    @LastModifiedDate
-//    private LocalDateTime updatedAt;
 
     public PerformanceSeatInfo(int id, Performance referenceById, int round, int gate, String a, int seat) {
         this.id = id;
@@ -63,5 +57,9 @@ public class PerformanceSeatInfo {
         this.gate = gate;
         this.line = a;
         this.seat = seat;
+    }
+
+    public void updatePerformance(Performance performance) {
+        this.performance = performance;
     }
 }
