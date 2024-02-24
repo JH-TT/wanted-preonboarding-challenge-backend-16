@@ -1,9 +1,8 @@
 package com.wanted.preonboarding.model.performance;
 
-import com.wanted.preonboarding.model.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +30,7 @@ public class PerformanceSeatInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", columnDefinition = "BINARY(16)")
     private Performance performance;
@@ -57,6 +57,11 @@ public class PerformanceSeatInfo {
         this.gate = gate;
         this.line = a;
         this.seat = seat;
+    }
+
+    // 현재 좌석이 매진되었는가
+    public boolean reservationEnable() {
+        return "enable".equals(isReserve);
     }
 
     public void updatePerformance(Performance performance) {
