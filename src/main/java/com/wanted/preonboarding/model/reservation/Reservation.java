@@ -1,5 +1,6 @@
 package com.wanted.preonboarding.model.reservation;
 
+import com.wanted.preonboarding.dto.reservation.ReservationRequest;
 import com.wanted.preonboarding.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -21,6 +23,7 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@ToString
 @SQLRestriction("deleted_at IS NULL")
 public class Reservation extends BaseEntity {
     @Id
@@ -40,4 +43,16 @@ public class Reservation extends BaseEntity {
     private String line;
     @Column(nullable = false)
     private int seat;
+
+    public static Reservation toEntity(ReservationRequest request) {
+        return Reservation.builder()
+                .performanceId(request.getPerformId())
+                .name(request.getUserName())
+                .phoneNumber(request.getPhoneNumber())
+                .round(request.getRound())
+                .gate(request.getGate())
+                .line(request.getLine())
+                .seat(request.getSeat())
+                .build();
+    }
 }
