@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -34,7 +35,8 @@ import org.hibernate.annotations.SQLRestriction;
 public class Performance extends BaseEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
-    @Column(columnDefinition = "BINARY(16)", nullable = false)
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
     @Column(name = "name", nullable = false)
     private String name;
@@ -63,6 +65,15 @@ public class Performance extends BaseEntity {
         if (getPerformanceSeats().size() == 0) {
             this.isReserve = "disable";
         }
+    }
+
+    public boolean canReserveSeat(int gate, String line, int seat) {
+        for (PerformanceSeatInfo performanceSeatInfo : seats) {
+            if (performanceSeatInfo.canReserve(gate, line, seat)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // 예약 가능 여부
