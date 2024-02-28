@@ -59,6 +59,11 @@ public class PerformanceSeatInfo {
         this.seat = seat;
     }
 
+    // 좌석 예약 여부
+    public boolean canReserve(int gate, String line, int seat) {
+        return this.gate == gate && this.line.equals(line) && this.seat == seat && reservationEnable();
+    }
+
     // 현재 좌석이 매진되었는가
     public boolean reservationEnable() {
         return "enable".equals(isReserve);
