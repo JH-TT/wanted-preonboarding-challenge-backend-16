@@ -50,8 +50,7 @@ public class PerformanceSeatInfo {
     @Column(columnDefinition = "VARCHAR(255) default 'enable'")
     private String isReserve;
 
-    public PerformanceSeatInfo(int id, Performance referenceById, int round, int gate, String a, int seat) {
-        this.id = id;
+    public PerformanceSeatInfo(Performance referenceById, int round, int gate, String a, int seat) {
         this.performance = referenceById;
         this.round = round;
         this.gate = gate;
@@ -62,6 +61,11 @@ public class PerformanceSeatInfo {
     // 좌석 예약 여부
     public boolean canReserve(int gate, String line, int seat) {
         return this.gate == gate && this.line.equals(line) && this.seat == seat && reservationEnable();
+    }
+
+    // 예약 완료
+    public void reserveSuccess() {
+        this.isReserve = "disable";
     }
 
     // 현재 좌석이 매진되었는가
