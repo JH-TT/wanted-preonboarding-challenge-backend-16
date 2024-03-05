@@ -36,7 +36,7 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.save(reservation);
 
         // 예약 성공했으니 해당 좌석은 만석
-        PerformanceSeatInfo seat = performanceSeatInfoRepository.findPerformanceSeatInfo(request.getGate(),
+        PerformanceSeatInfo seat = performanceSeatInfoRepository.findPerformanceSeatInfo(performance, request.getGate(),
                 request.getLine(), request.getSeat()).orElseThrow(
                         () -> new IllegalArgumentException("해당 좌석이 없습니다."));
         seat.reserveSuccess();
