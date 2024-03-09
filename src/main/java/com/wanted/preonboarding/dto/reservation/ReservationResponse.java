@@ -1,5 +1,6 @@
 package com.wanted.preonboarding.dto.reservation;
 
+import com.wanted.preonboarding.model.reservation.Reservation;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,15 +26,15 @@ public class ReservationResponse {
     private String name;
     private String phoneNumber;
 
-    public static ReservationResponse of(ReservationRequest request) {
+    public static ReservationResponse of(Reservation request) {
         return ReservationResponse.builder()
                 .round(request.getRound())
-                .performanceName(request.getPerformName())
-                .performId(request.getPerformId())
+                .performanceName(request.getPerformanceName())
+                .performId(request.getPerformanceId())
                 .gate(request.getGate())
                 .line(request.getLine())
                 .seat(request.getSeat())
-                .name(request.getUserName())
+                .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
                 .build();
     }

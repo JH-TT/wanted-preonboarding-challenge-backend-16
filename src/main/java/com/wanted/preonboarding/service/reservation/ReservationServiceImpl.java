@@ -50,6 +50,6 @@ public class ReservationServiceImpl implements ReservationService {
         // 예약 성공했으니 해당 좌석은 만석
         seat.reserveSuccess();
 
-        return ReservationResponse.of(request);
+        return ReservationResponse.of(reservation);
     }
 }
