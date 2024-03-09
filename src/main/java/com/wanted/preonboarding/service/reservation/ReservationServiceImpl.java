@@ -2,13 +2,15 @@ package com.wanted.preonboarding.service.reservation;
 
 import com.wanted.preonboarding.dto.reservation.ReservationRequest;
 import com.wanted.preonboarding.dto.reservation.ReservationResponse;
+import com.wanted.preonboarding.dto.reservation.ReservationUserInfo;
 import com.wanted.preonboarding.model.performance.Performance;
 import com.wanted.preonboarding.model.performance.PerformanceSeatInfo;
 import com.wanted.preonboarding.model.reservation.Reservation;
 import com.wanted.preonboarding.repository.PerformanceRepository;
 import com.wanted.preonboarding.repository.PerformanceSeatInfoRepository;
 import com.wanted.preonboarding.repository.ReservationRepository;
-import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,5 +53,12 @@ public class ReservationServiceImpl implements ReservationService {
         seat.reserveSuccess();
 
         return ReservationResponse.of(reservation);
+    }
+
+    @Override
+    public List<ReservationResponse> reservationList(ReservationUserInfo request) {
+        List<Reservation> reservationList = reservationRepository.findAllByUserNameAndPhoneNumber(request.getUserName(),
+                request.getPhoneNumber());
+        return reservationList.stream().map(ReservationResponse::of).collect(Collectors.toList());
     }
 }
