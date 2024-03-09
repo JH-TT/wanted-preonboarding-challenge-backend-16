@@ -52,6 +52,7 @@ public class Performance extends BaseEntity {
     private String isReserve;
 
     @OneToMany
+    @Builder.Default
     @JoinColumn(name = "performance_id")
     private List<PerformanceSeatInfo> seats = new ArrayList<>();
 
@@ -62,31 +63,19 @@ public class Performance extends BaseEntity {
     }
 
     private void updateIsReservation() {
-        if (getPerformanceSeats().size() == 0) {
+        if (getPerformanceSeatsCount() == 0) {
             this.isReserve = "disable";
         }
     }
 
-    public boolean canReserveSeat(int gate, String line, int seat) {
-        for (PerformanceSeatInfo performanceSeatInfo : seats) {
-            if (performanceSeatInfo.canReserve(gate, line, seat)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // 예약 가능 여부
-    public boolean isReservationEnable() {
-        return "enable".equals(isReserve);
-    }
-
     // 예약 가능 좌석 가져오기
-    public List<PerformanceSeat> getPerformanceSeats() {
-        return seats.stream()
-                .filter(PerformanceSeatInfo::reservationEnable)
-                .map(PerformanceSeat::of)
-                .collect(Collectors.toList());
+    public long getPerformanceSeatsCount() {
+        long cnt = 0;
+        for (PerformanceSeatInfo seat : seats) {
+            if (!seat.reservationEnable()) continue;
+            cnt++;
+        }
+        return cnt;
     }
 
     public List<PerformanceSeatInfo> getReserveSeat() {

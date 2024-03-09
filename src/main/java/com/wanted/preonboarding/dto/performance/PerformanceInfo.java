@@ -16,6 +16,7 @@ public class PerformanceInfo {
     private int type; // 공연인지 전시회 인지
     private String startDate; // 시작 일시
     private String isReserve; // 예매 가능 여부
+    private long remainSeat; // 남은 좌석의 수
 
     public static PerformanceInfo of(Performance perform) {
         return PerformanceInfo.builder()
@@ -25,6 +26,7 @@ public class PerformanceInfo {
                 .type(perform.getType())
                 .startDate(perform.getStartDate().toString())
                 .isReserve(perform.getIsReserve())
+                .remainSeat(perform.getPerformanceSeatsCount())
                 .build();
     }
 }
