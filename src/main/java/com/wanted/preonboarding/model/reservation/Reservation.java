@@ -32,6 +32,8 @@ public class Reservation extends BaseEntity {
     @Column(columnDefinition = "BINARY(16)", nullable = false, name = "performance_id")
     private UUID performanceId;
     @Column(nullable = false)
+    private String performanceName;
+    @Column(nullable = false)
     private String name;
     @Column(nullable = false)
     private String phoneNumber;
@@ -47,6 +49,7 @@ public class Reservation extends BaseEntity {
     public static Reservation toEntity(ReservationRequest request) {
         return Reservation.builder()
                 .performanceId(request.getPerformId())
+                .performanceName(request.getPerformName())
                 .name(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
                 .round(request.getRound())
