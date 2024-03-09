@@ -21,25 +21,35 @@ public class ReservationServiceImpl implements ReservationService {
     private final PerformanceRepository performanceRepository;
     private final PerformanceSeatInfoRepository performanceSeatInfoRepository;
 
+    /**
+     * reservation process
+     * 1. 공연이 유효한가
+     * 2. 좌석이 유효한가
+     * 3. 돈은 맞게 갖고 있는가
+     * 4. 예약 성공
+     *      4-1. 해당 좌석 예약 처리
+     */
     @Transactional
     public ReservationResponse reserve(ReservationRequest request) {
-        // 예약하는 과정
         // 일단 해당 공연이 있는지 확인
         Performance performance = performanceRepository.findById(request.getPerformId().toString())
                 .orElseThrow(() -> new IllegalArgumentException("공연이 없습니다."));
+
         // 해당 좌석이 알맞은 좌석인지 확인
-        if (!performance.canReserveSeat(request.getGate(), request.getLine(), request.getSeat())) {
-            throw new IllegalArgumentException("알맞은 좌석이 없습니다");
-        }
-        // 예약 확인
+        PerformanceSeatInfo seat = performanceSeatInfoRepository.findPerformanceSeatInfo(performance, request.getGate(),
+                request.getLine(), request.getSeat()).orElseThrow(
+                () -> new IllegalArgumentException("해당 좌석이 없습니다."));
+
+        // 돈이 충분한가
+        request.canReserve(performance.getPrice());
+
+        // 예약 성공
         Reservation reservation = Reservation.toEntity(request);
         reservationRepository.save(reservation);
 
         // 예약 성공했으니 해당 좌석은 만석
-        PerformanceSeatInfo seat = performanceSeatInfoRepository.findPerformanceSeatInfo(performance, request.getGate(),
-                request.getLine(), request.getSeat()).orElseThrow(
-                        () -> new IllegalArgumentException("해당 좌석이 없습니다."));
         seat.reserveSuccess();
+
         return ReservationResponse.of(request);
     }
 }

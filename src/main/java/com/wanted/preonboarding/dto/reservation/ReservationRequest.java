@@ -17,4 +17,10 @@ public class ReservationRequest {
     private int gate;
     private String line;
     private int seat;
+
+    public void canReserve(long price) {
+        if (balance < price) {
+            throw new IllegalArgumentException("잔액이 부족합니다.");
+        }
+    }
 }
