@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PerformanceSeatInfoRepository extends JpaRepository<PerformanceSeatInfo, Integer> {
 
-    @Query(value = "select s from PerformanceSeatInfo s where s.performance = :id and s.gate = :gate and s.line = :line and s.seat = :seat and s.isReserve = 'enable'")
+    @Query(value = "select s from PerformanceSeatInfo s where s.performance = :id and s.gate = :gate and s.line = :line and s.seat = :seat")
     Optional<PerformanceSeatInfo> findPerformanceSeatInfo(@Param("id") Performance id, @Param("gate") int gate, @Param("line") String line, @Param("seat") int seat);
 }
