@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -20,6 +21,7 @@ import org.hibernate.annotations.DynamicInsert;
 @Entity
 @Getter
 @Table
+@Builder
 @ToString(exclude = "performance")
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
