@@ -33,11 +33,9 @@ public class ReservationServiceImpl implements ReservationService {
      */
     @Transactional
     public ReservationResponse reserve(ReservationRequest request) {
-        // 일단 해당 공연이 있는지 확인
         Performance performance = performanceRepository.findById(request.getPerformId())
                 .orElseThrow(() -> new IllegalArgumentException("공연이 없습니다."));
 
-        // 해당 좌석이 알맞은 좌석인지 확인
         PerformanceSeatInfo seat = performanceSeatInfoRepository.findPerformanceSeatInfo(performance, request.getGate(),
                 request.getLine(), request.getSeat()).orElseThrow(
                 () -> new IllegalArgumentException("해당 좌석이 없습니다."));
@@ -46,14 +44,11 @@ public class ReservationServiceImpl implements ReservationService {
             throw new IllegalArgumentException("해당 좌석은 이미 예약 완료되었습니다");
         }
 
-        // 돈이 충분한가
         request.canReserve(performance.getPrice());
 
-        // 예약 성공
         Reservation reservation = Reservation.toEntity(request);
         reservationRepository.save(reservation);
 
-        // 예약 성공했으니 해당 좌석은 만석
         seat.reserveSuccess();
 
         return ReservationResponse.of(reservation);
