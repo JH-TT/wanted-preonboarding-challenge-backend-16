@@ -1,6 +1,5 @@
 package com.wanted.preonboarding.model.performance;
 
-import com.wanted.preonboarding.dto.seat.PerformanceSeat;
 import com.wanted.preonboarding.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,10 +10,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -76,9 +73,5 @@ public class Performance extends BaseEntity {
             cnt++;
         }
         return cnt;
-    }
-
-    public List<PerformanceSeatInfo> getReserveSeat() {
-        return Collections.unmodifiableList(seats);
     }
 }
