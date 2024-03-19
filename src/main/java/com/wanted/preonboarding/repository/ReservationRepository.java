@@ -2,6 +2,7 @@ package com.wanted.preonboarding.repository;
 
 import com.wanted.preonboarding.model.reservation.Reservation;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,4 +14,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     @Query("select r from Reservation r where r.name = :userName and r.phoneNumber = :phoneNumber")
     List<Reservation> findAllByUserNameAndPhoneNumber(@Param("userName") String userName,
                                                       @Param("phoneNumber") String phoneNumber);
+
+    Optional<Reservation> findFirstByNameAndPhoneNumber(String name, String phoneNumber);
 }
