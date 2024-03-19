@@ -173,6 +173,28 @@ class ReservationTest {
         Assertions.assertThat(reservationResponses.size()).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("첫 결제 할인 테스트")
+    public void 첫_결제_할인_테스트() {
+        // given
+        Performance performance = getSamplePerformance(PERFORMANCE_NAME, 20000, 1, 0, LocalDateTime.now(), "enable"); // 게르테나 미술관 전시회 정보
+        Performance savedPerformance = performanceRepository.save(performance);
+
+        for (int i = 1; i < 5; i++) {
+            PerformanceSeatInfo seatInfo = getSampleSeat(savedPerformance, i);
+            performanceSeatInfoRepository.save(seatInfo);
+            performance.reserveSeat(seatInfo);
+        }
+
+        // when
+        ReservationRequest request = getReservationRequest(savedPerformance.getId(), savedPerformance.getName(), 100000);
+        reservationService.reserve(request);
+
+        // then
+        // 첫 결제라 10퍼 할인 -> 18000원만 결제
+        Assertions.assertThat(request.getBalance()).isEqualTo(82000);
+    }
+
     /**
      * 공연 Fixture 생성
      * @param performanceName 게르테나 미술관
