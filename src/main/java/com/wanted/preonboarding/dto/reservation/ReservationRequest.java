@@ -1,9 +1,13 @@
 package com.wanted.preonboarding.dto.reservation;
 
 import java.util.UUID;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@ToString
 public class ReservationRequest {
 
     private String userName;
@@ -18,9 +22,10 @@ public class ReservationRequest {
     private String line;
     private int seat;
 
-    public void canReserve(long price) {
+    public void pay(long price) {
         if (balance < price) {
             throw new IllegalArgumentException("잔액이 부족합니다.");
         }
+        balance -= price;
     }
 }
