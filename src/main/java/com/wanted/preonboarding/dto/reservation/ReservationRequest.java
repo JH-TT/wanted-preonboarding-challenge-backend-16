@@ -1,5 +1,6 @@
 package com.wanted.preonboarding.dto.reservation;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,11 +22,13 @@ public class ReservationRequest {
     private int gate;
     private String line;
     private int seat;
+    private ArrayList<String> salesList;
 
-    public void pay(long price) {
+    public void payable(long price, ArrayList<String> salesList) {
         if (balance < price) {
             throw new IllegalArgumentException("잔액이 부족합니다.");
         }
-        balance -= price;
+        this.balance -= price;
+        this.salesList = salesList;
     }
 }

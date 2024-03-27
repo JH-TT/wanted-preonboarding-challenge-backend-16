@@ -14,6 +14,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     @Query("select r from Reservation r where r.name = :userName and r.phoneNumber = :phoneNumber")
     List<Reservation> findAllByUserNameAndPhoneNumber(@Param("userName") String userName,
                                                       @Param("phoneNumber") String phoneNumber);
-
-    Optional<Reservation> findFirstByNameAndPhoneNumber(String name, String phoneNumber);
+    long countByNameAndPhoneNumber(String name, String phoneNumber);
 }
