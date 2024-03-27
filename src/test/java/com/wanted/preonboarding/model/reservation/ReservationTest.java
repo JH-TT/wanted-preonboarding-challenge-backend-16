@@ -189,10 +189,33 @@ class ReservationTest {
         // when
         ReservationRequest request = getReservationRequest(savedPerformance.getId(), savedPerformance.getName(), 100000);
         reservationService.reserve(request);
+        System.out.println(request.getSalesList());
+        // then
+        // 첫 결제라 10% 할인 -> 18000원만 결제
+        Assertions.assertThat(request.getBalance()).isEqualTo(82000);
+    }
+
+    @Test
+    @DisplayName("첫 결제 + 일주일 전 결제 할인 테스트")
+    public void 첫_결제와_일주일_전_결제_할인_테스트() throws Exception {
+        // given
+        Performance performance = getSamplePerformance(PERFORMANCE_NAME, 20000, 1, 0, LocalDateTime.now().plusDays(10), "enable"); // 게르테나 미술관 전시회 정보
+        Performance savedPerformance = performanceRepository.save(performance);
+
+        for (int i = 1; i < 5; i++) {
+            PerformanceSeatInfo seatInfo = getSampleSeat(savedPerformance, i);
+            performanceSeatInfoRepository.save(seatInfo);
+            performance.reserveSeat(seatInfo);
+        }
+
+        // when
+        ReservationRequest request = getReservationRequest(savedPerformance.getId(), savedPerformance.getName(), 100000);
+        reservationService.reserve(request);
+        System.out.println(request.getSalesList());
 
         // then
-        // 첫 결제라 10퍼 할인 -> 18000원만 결제
-        Assertions.assertThat(request.getBalance()).isEqualTo(82000);
+        // 첫 결제 10% + 일주일전 결제 + 2000원 -> 총 4000원 할인으로 16000원만 계산
+        Assertions.assertThat(request.getBalance()).isEqualTo(84000);
     }
 
     /**
