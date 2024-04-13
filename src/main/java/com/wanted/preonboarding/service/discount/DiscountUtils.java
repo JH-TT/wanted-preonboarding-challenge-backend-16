@@ -1,5 +1,7 @@
 package com.wanted.preonboarding.service.discount;
 
+import static com.wanted.preonboarding.Enum.DiscountType.*;
+
 import com.wanted.preonboarding.Enum.DiscountType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,21 +22,21 @@ public class DiscountUtils {
     private static long firstPay(long cnt, long price, ArrayList<String> salesList) {
         if (cnt != 0) return 0;
         DiscountService discountService = new DiscountService(BigDecimal.valueOf(price));
-        salesList.add(DiscountType.FIRST_PURCHASE.getDiscountDesc());
-        return discountService.applyDiscount(DiscountType.FIRST_PURCHASE).longValue();
+        salesList.add(FIRST_PURCHASE.getDiscountDesc());
+        return discountService.applyDiscount(FIRST_PURCHASE).longValue();
     }
 
     private static long payBeforeOneWeek(long price, LocalDateTime startDate, LocalDateTime now, ArrayList<String> salesList) {
         if (ChronoUnit.WEEKS.between(now, startDate) < 1) return 0;
         DiscountService discountService = new DiscountService(BigDecimal.valueOf(price));
-        salesList.add(DiscountType.PURCHASE_BEFORE_ONE_WEEK.getDiscountDesc());
-        return discountService.applyDiscount(DiscountType.PURCHASE_BEFORE_ONE_WEEK).longValue();
+        salesList.add(PURCHASE_BEFORE_ONE_WEEK.getDiscountDesc());
+        return discountService.applyDiscount(PURCHASE_BEFORE_ONE_WEEK).longValue();
     }
 
     private static long payPerTenTimes(long cnt, long price, ArrayList<String> salesList) {
         if (cnt == 0 || cnt % 10 != 0) return 0;
         DiscountService discountService = new DiscountService(BigDecimal.valueOf(price));
-        salesList.add(DiscountType.PER_TEN_TIMES.getDiscountDesc());
-        return discountService.applyDiscount(DiscountType.PER_TEN_TIMES).longValue();
+        salesList.add(PER_TEN_TIMES.getDiscountDesc());
+        return discountService.applyDiscount(PER_TEN_TIMES).longValue();
     }
 }
