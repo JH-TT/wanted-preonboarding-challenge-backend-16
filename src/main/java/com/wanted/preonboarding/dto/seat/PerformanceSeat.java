@@ -4,6 +4,7 @@ package com.wanted.preonboarding.dto.seat;
 import com.wanted.preonboarding.model.performance.PerformanceSeatInfo;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -13,12 +14,21 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
 public class PerformanceSeat {
 
     private int gate;
     private String line;
     private int seat;
     private String isReserve;
+
+    // 직접 생성자 추가
+    public PerformanceSeat(int gate, String line, int seat, String isReserve) {
+        this.gate = gate;
+        this.line = line;
+        this.seat = seat;
+        this.isReserve = isReserve;
+    }
 
     public static PerformanceSeat of(PerformanceSeatInfo performanceSeatInfo) {
         return PerformanceSeat.builder()
