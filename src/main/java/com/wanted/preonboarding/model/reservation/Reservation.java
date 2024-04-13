@@ -1,9 +1,13 @@
 package com.wanted.preonboarding.model.reservation;
 
+import com.wanted.preonboarding.Enum.ReservationStatus;
 import com.wanted.preonboarding.dto.reservation.ReservationRequest;
+import com.wanted.preonboarding.dto.seat.PerformanceSeat;
 import com.wanted.preonboarding.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,17 +50,28 @@ public class Reservation extends BaseEntity {
     private String line;
     @Column(nullable = false)
     private int seat;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
 
-    public static Reservation toEntity(ReservationRequest request) {
+    public static Reservation toEntity(ReservationRequest request, PerformanceSeat performSeat) {
         return Reservation.builder()
                 .performanceId(request.getPerformId())
                 .performanceName(request.getPerformName())
                 .name(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
                 .round(request.getRound())
-                .gate(request.getGate())
-                .line(request.getLine())
-                .seat(request.getSeat())
+                .gate(performSeat.getGate())
+                .line(performSeat.getLine())
+                .seat(performSeat.getSeat())
+                .status(ReservationStatus.ACTIVE)
                 .build();
+    }
+
+    public void updateStatus(ReservationStatus status) {
+        this.status = status;
+    }
+    public String getSeatInfo() {
+        return gate + "관 " + line + seat;
     }
 }
