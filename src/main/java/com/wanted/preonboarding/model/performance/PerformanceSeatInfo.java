@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 @Entity
@@ -49,6 +50,8 @@ public class PerformanceSeatInfo {
     @Column(nullable = false)
     private int seat;
 
+    private Integer reservationId;
+
     @Column(columnDefinition = "VARCHAR(255) default 'enable'")
     private String isReserve;
 
@@ -62,12 +65,16 @@ public class PerformanceSeatInfo {
 
     // 좌석 예약 여부
     public boolean canReserve(int gate, String line, int seat) {
-        return this.gate == gate && this.line.equals(line) && this.seat == seat && reservationEnable();
+        return this.gate == gate
+                && this.line.equals(line)
+                && this.seat == seat
+                && reservationEnable();
     }
 
     // 예약 완료
-    public void reserveSuccess() {
+    public void reserveSuccess(int reserveId) {
         this.isReserve = "disable";
+        this.reservationId = reserveId;
     }
 
     // 현재 좌석이 매진되었는가
