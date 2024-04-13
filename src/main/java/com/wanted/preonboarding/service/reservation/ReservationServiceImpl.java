@@ -1,8 +1,11 @@
 package com.wanted.preonboarding.service.reservation;
 
+import com.wanted.preonboarding.Enum.ReservationStatus;
+import com.wanted.preonboarding.dto.reservation.ReservationInfo;
 import com.wanted.preonboarding.dto.reservation.ReservationRequest;
 import com.wanted.preonboarding.dto.reservation.ReservationResponse;
 import com.wanted.preonboarding.dto.reservation.ReservationUserInfo;
+import com.wanted.preonboarding.dto.seat.PerformanceSeat;
 import com.wanted.preonboarding.model.performance.Performance;
 import com.wanted.preonboarding.model.performance.PerformanceSeatInfo;
 import com.wanted.preonboarding.model.reservation.Reservation;
@@ -15,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final PerformanceRepository performanceRepository;
     private final PerformanceSeatInfoRepository performanceSeatInfoRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     /**
      * reservation process
@@ -39,30 +44,54 @@ public class ReservationServiceImpl implements ReservationService {
         Performance performance = performanceRepository.findById(request.getPerformId())
                 .orElseThrow(() -> new IllegalArgumentException("공연이 없습니다."));
 
-        PerformanceSeatInfo seat = performanceSeatInfoRepository.findPerformanceSeatInfo(performance, request.getGate(),
-                request.getLine(), request.getSeat()).orElseThrow(
-                () -> new IllegalArgumentException("해당 좌석이 없습니다."));
+        List<Reservation> reservationList = new ArrayList<>();
+        ArrayList<String> seatInfos = new ArrayList<>();
+        for (PerformanceSeat performanceSeat : request.getSeatList()) {
+            // 좌석을 가져온다.
+            PerformanceSeatInfo seat = getSeat(performance, performanceSeat);
 
-        if (!seat.reservationEnable()) {
-            throw new IllegalArgumentException("해당 좌석은 이미 예약 완료되었습니다");
+            // 예약을 진행한다.
+            Reservation reservation = Reservation.toEntity(request, performanceSeat);
+            reservationList.add(reservation);
+            seatInfos.add(reservation.getSeatInfo());
+            seat.reserveSuccess(reservation.getId()); // 좌석을 예약처리한다.
         }
+        this.pay(request, (long) performance.getPrice() * request.getSeatList().size(), performance.getStartDate(), LocalDateTime.now()); // 결제 진행
+        reservationRepository.saveAll(reservationList);
 
-        this.pay(request, performance.getPrice(), performance.getStartDate(), LocalDateTime.now()); // 결제 진행
+        return ReservationResponse.of(request, seatInfos);
+    }
 
-        Reservation reservation = Reservation.toEntity(request);
-        reservationRepository.save(reservation);
+    private PerformanceSeatInfo getSeat(Performance performance, PerformanceSeat performanceSeat) {
+        PerformanceSeatInfo performanceSeatInfo = performanceSeatInfoRepository.findPerformanceSeatInfo(
+                        performance,
+                        performanceSeat.getGate(),
+                        performanceSeat.getLine(),
+                        performanceSeat.getSeat())
+                .orElseThrow(() -> new IllegalArgumentException("해당 좌석이 없습니다."));
 
-        seat.reserveSuccess();
-
-        return ReservationResponse.of(reservation);
+        if (!performanceSeatInfo.reservationEnable()) {
+            throw new IllegalArgumentException("예약할 수 없는 좌석입니다.");
+        }
+        return performanceSeatInfo;
     }
 
     @Override
-    public List<ReservationResponse> reservationList(ReservationUserInfo request) {
+    public List<ReservationInfo> reservationList(ReservationUserInfo request) {
         List<Reservation> reservationList = reservationRepository.findAllByUserNameAndPhoneNumber(request.getUserName(),
                 request.getPhoneNumber());
-        return reservationList.stream().map(ReservationResponse::of).collect(Collectors.toList());
+        return reservationList.stream().map(ReservationInfo::of).collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteReservation(int id, ReservationStatus status) {
+        reservationRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("해당 예약이 없습니다.")
+        );
+        reservationRepository.softDeleteById(status, LocalDateTime.now(), id);
+        performanceSeatInfoRepository.deleteByReservationId(id);
+    }
+
 
     private void pay(ReservationRequest request, long price, LocalDateTime startDate, LocalDateTime now) {
         long countReservation = reservationRepository.countByNameAndPhoneNumber(
