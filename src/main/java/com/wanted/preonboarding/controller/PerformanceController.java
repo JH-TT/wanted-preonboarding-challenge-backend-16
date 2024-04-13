@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,9 +27,11 @@ public class PerformanceController {
 
     // 현재 공연, 전시회 목록을 리턴한다.
     @GetMapping()
-    public List<PerformanceInfo> getList() {
+    public ResponseEntity<List<PerformanceInfo>> getList() {
         List<Performance> all = performanceRepository.findAll();
-        return all.stream().map(PerformanceInfo::of).collect(Collectors.toList());
+        return ResponseEntity.ok(
+                all.stream().map(PerformanceInfo::of).collect(Collectors.toList())
+        );
     }
 
     // 특정 공연과 회차를 입력 받으면 좌석 정보를 보여준다.
