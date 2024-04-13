@@ -67,11 +67,6 @@ public class Performance extends BaseEntity {
 
     // 예약 가능 좌석 가져오기
     public long getPerformanceSeatsCount() {
-        long cnt = 0;
-        for (PerformanceSeatInfo seat : seats) {
-            if (!seat.reservationEnable()) continue;
-            cnt++;
-        }
-        return cnt;
+        return seats.stream().filter(PerformanceSeatInfo::reservationEnable).count();
     }
 }
