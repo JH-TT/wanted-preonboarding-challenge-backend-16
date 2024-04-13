@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -18,12 +19,12 @@ import lombok.ToString;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
-@Table
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @ToString
+@Table(indexes = @Index(name = "idx_performance_id", columnList = "performance_id"))
 @SQLRestriction("deleted_at IS NULL")
 public class Reservation extends BaseEntity {
     @Id

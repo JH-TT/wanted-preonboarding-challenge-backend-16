@@ -1,10 +1,10 @@
 package com.wanted.preonboarding.dto.reservation;
 
-import com.wanted.preonboarding.model.reservation.Reservation;
-import java.util.UUID;
+import java.util.ArrayList;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 
 /*
@@ -13,29 +13,29 @@ Response Message: 예매가 완료된 공연의 정보(회차, 공연명, 좌석
 @Setter
 @Getter
 @Builder
+@ToString
 public class ReservationResponse {
     private int round;
     private String performanceName;
-    private UUID performId;
+    private long balance;
+
     // 좌석정보
-    private int gate;
-    private String line;
-    private int seat;
+    private String seatInfos;
 
     // 예매자 정보
     private String name;
     private String phoneNumber;
+    private ArrayList<String> salesList;
 
-    public static ReservationResponse of(Reservation request) {
+    public static ReservationResponse of(ReservationRequest request, ArrayList<String> seats) {
         return ReservationResponse.builder()
                 .round(request.getRound())
-                .performanceName(request.getPerformanceName())
-                .performId(request.getPerformanceId())
-                .gate(request.getGate())
-                .line(request.getLine())
-                .seat(request.getSeat())
-                .name(request.getName())
+                .performanceName(request.getPerformName())
+                .balance(request.getBalance())
+                .seatInfos(String.join(", ", seats))
+                .name(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
+                .salesList(request.getSalesList())
                 .build();
     }
 }
