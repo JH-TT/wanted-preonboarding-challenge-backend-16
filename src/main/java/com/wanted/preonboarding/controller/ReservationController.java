@@ -1,7 +1,6 @@
 package com.wanted.preonboarding.controller;
 
 import com.wanted.preonboarding.Enum.ReservationStatus;
-import com.wanted.preonboarding.dto.reservation.ReservationInfo;
 import com.wanted.preonboarding.dto.reservation.ReservationRequest;
 import com.wanted.preonboarding.dto.reservation.ReservationResponse;
 import com.wanted.preonboarding.dto.reservation.ReservationUserInfo;
@@ -37,13 +36,13 @@ public class ReservationController {
      * 유저 이름과 유저 전화번호 정보를 받고 해당 예약 정보를 리턴한다.
      */
     @GetMapping("")
-    public List<ReservationInfo> reservationList(@RequestBody ReservationUserInfo request) {
+    public List<ReservationResponse> reservationList(@RequestBody ReservationUserInfo request) {
         return reservationService.reservationList(request);
     }
 
     // 해당 예약 삭제 (만약 예약이 여러자리 예약이었으면 그 좌석들도 전부 예약취소되어야 한다.)
     @DeleteMapping("/{id}")
-    public void reservationDelete(@PathVariable int id) {
+    public void reservationDelete(@PathVariable long id) {
         reservationService.deleteReservation(id, ReservationStatus.CANCEL);
     }
 }

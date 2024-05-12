@@ -1,6 +1,8 @@
 package com.wanted.preonboarding.dto.reservation;
 
+import com.wanted.preonboarding.model.reservation.Reservation;
 import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +17,7 @@ Response Message: 예매가 완료된 공연의 정보(회차, 공연명, 좌석
 @Builder
 @ToString
 public class ReservationResponse {
+    private long reservationId;
     private int round;
     private String performanceName;
     private long balance;
@@ -25,17 +28,17 @@ public class ReservationResponse {
     // 예매자 정보
     private String name;
     private String phoneNumber;
-    private ArrayList<String> salesList;
+    private List<String> salesList;
 
-    public static ReservationResponse of(ReservationRequest request, ArrayList<String> seats) {
+    public static ReservationResponse of(Reservation reservation) {
         return ReservationResponse.builder()
-                .round(request.getRound())
-                .performanceName(request.getPerformName())
-                .balance(request.getBalance())
-                .seatInfos(String.join(", ", seats))
-                .name(request.getUserName())
-                .phoneNumber(request.getPhoneNumber())
-                .salesList(request.getSalesList())
+                .reservationId(reservation.getId())
+                .round(reservation.getRound())
+                .performanceName(reservation.getPerformanceName())
+                .seatInfos(String.join(", ", reservation.getReservedSeats()))
+                .name(reservation.getName())
+                .phoneNumber(reservation.getPhoneNumber())
+                .salesList(reservation.getSalesList() == null ? new ArrayList<>() : reservation.getSalesList())
                 .build();
     }
 }
