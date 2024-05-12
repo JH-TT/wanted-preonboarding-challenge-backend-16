@@ -20,7 +20,7 @@ public class DiscountUtils {
     }
 
     private static long firstPay(long cnt, long price, ArrayList<String> salesList) {
-        if (cnt != 0) return 0;
+        if (cnt > 1) return 0;
         DiscountService discountService = new DiscountService(BigDecimal.valueOf(price));
         salesList.add(FIRST_PURCHASE.getDiscountDesc());
         return discountService.applyDiscount(FIRST_PURCHASE).longValue();
