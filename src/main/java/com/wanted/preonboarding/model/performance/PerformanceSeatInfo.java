@@ -1,6 +1,7 @@
 package com.wanted.preonboarding.model.performance;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wanted.preonboarding.model.reservation.Reservation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,14 +17,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
 @Table
 @Builder
-@ToString(exclude = "performance")
+@ToString(exclude = {"performance", "reservation"})
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -50,7 +50,10 @@ public class PerformanceSeatInfo {
     @Column(nullable = false)
     private int seat;
 
-    private Integer reservationId;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
 
     @Column(columnDefinition = "VARCHAR(255) default 'enable'")
     private String isReserve;
@@ -72,9 +75,9 @@ public class PerformanceSeatInfo {
     }
 
     // 예약 완료
-    public void reserveSuccess(int reserveId) {
+    public void reserveSuccess(Reservation reservation) {
         this.isReserve = "disable";
-        this.reservationId = reserveId;
+        this.reservation = reservation;
     }
 
     // 현재 좌석이 매진되었는가
@@ -84,5 +87,9 @@ public class PerformanceSeatInfo {
 
     public void updatePerformance(Performance performance) {
         this.performance = performance;
+    }
+
+    public String seatInfo() {
+        return gate + "관 " + line + seat;
     }
 }

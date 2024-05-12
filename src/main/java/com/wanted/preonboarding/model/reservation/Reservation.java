@@ -2,17 +2,22 @@ package com.wanted.preonboarding.model.reservation;
 
 import com.wanted.preonboarding.Enum.ReservationStatus;
 import com.wanted.preonboarding.dto.reservation.ReservationRequest;
-import com.wanted.preonboarding.dto.seat.PerformanceSeat;
 import com.wanted.preonboarding.model.BaseEntity;
+import com.wanted.preonboarding.model.performance.PerformanceSeatInfo;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,7 +38,7 @@ import org.hibernate.annotations.SQLRestriction;
 public class Reservation extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @Column(columnDefinition = "BINARY(16)", nullable = false, name = "performance_id")
     private UUID performanceId;
     @Column(nullable = false)
@@ -44,34 +49,37 @@ public class Reservation extends BaseEntity {
     private String phoneNumber;
     @Column(nullable = false)
     private int round;
-    @Column(nullable = false)
-    private int gate;
-    @Column(nullable = false)
-    private String line;
-    @Column(nullable = false)
-    private int seat;
+    @OneToMany(mappedBy = "reservation")
+    @Builder.Default
+    private List<PerformanceSeatInfo> seats = new ArrayList<>();
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
+    @ElementCollection
+    private List<String> salesList = new ArrayList<>();
 
-    public static Reservation toEntity(ReservationRequest request, PerformanceSeat performSeat) {
+    public static Reservation toEntity(ReservationRequest request) {
         return Reservation.builder()
                 .performanceId(request.getPerformId())
                 .performanceName(request.getPerformName())
                 .name(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
                 .round(request.getRound())
-                .gate(performSeat.getGate())
-                .line(performSeat.getLine())
-                .seat(performSeat.getSeat())
                 .status(ReservationStatus.ACTIVE)
+                .salesList(request.getSalesList())
                 .build();
     }
 
+    public void reserveSeat(PerformanceSeatInfo seatInfo) {
+        this.seats.add(seatInfo);
+        seatInfo.reserveSuccess(this); // 좌석을 예약 처리
+    }
+
+    // 예약한 좌석을 가져온다.
+    public List<String> getReservedSeats() {
+        return this.seats.stream().map(PerformanceSeatInfo::seatInfo).toList();
+    }
     public void updateStatus(ReservationStatus status) {
         this.status = status;
-    }
-    public String getSeatInfo() {
-        return gate + "관 " + line + seat;
     }
 }

@@ -48,12 +48,11 @@ public class Performance extends BaseEntity {
     @Column(name = "is_reserve", nullable = false, columnDefinition = "VARCHAR(255) default 'disable'")
     private String isReserve;
 
-    @OneToMany
+    @OneToMany(mappedBy = "performance")
     @Builder.Default
-    @JoinColumn(name = "performance_id")
     private List<PerformanceSeatInfo> seats = new ArrayList<>();
 
-    public void reserveSeat(PerformanceSeatInfo seatInfo) {
+    public void registerSeat(PerformanceSeatInfo seatInfo) {
         this.seats.add(seatInfo);
         seatInfo.updatePerformance(this);
         updateIsReservation(); // 좌석이 꽉 찼는지 확인한다
