@@ -28,6 +28,7 @@ public class PerformanceController {
     // 현재 공연, 전시회 목록을 리턴한다.
     @GetMapping()
     public ResponseEntity<List<PerformanceInfo>> getList() {
+        log.info("start method : getList()");
         List<Performance> all = performanceRepository.findAll();
         return ResponseEntity.ok(
                 all.stream().map(PerformanceInfo::of).collect(Collectors.toList())
@@ -37,6 +38,8 @@ public class PerformanceController {
     // 특정 공연과 회차를 입력 받으면 좌석 정보를 보여준다.
     @GetMapping("/seats")
     public List<PerformanceSeat> getSeatList(@RequestBody PerformanceInfoRequest request) {
+        log.info("start method : getSeatList");
+        log.info("request : {}", request);
         // 해당 정보를 Service로 넘기고 좌석정보를 받는다.
         return performanceService.getSeats(request);
     }
