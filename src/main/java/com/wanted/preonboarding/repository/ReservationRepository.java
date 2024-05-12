@@ -17,11 +17,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     @Query("select r from Reservation r where r.name = :userName and r.phoneNumber = :phoneNumber")
     List<Reservation> findAllByUserNameAndPhoneNumber(@Param("userName") String userName,
                                                       @Param("phoneNumber") String phoneNumber);
+    Optional<Reservation> findById(Long id);
     long countByNameAndPhoneNumber(String name, String phoneNumber);
 
     @Modifying
     @Query("UPDATE Reservation r SET r.status = :status, r.deletedAt = :deleteTime WHERE r.id = :id")
     void softDeleteById(@Param("status") ReservationStatus status,
                         @Param("deleteTime") LocalDateTime deleteTime,
-                        @Param("id") Integer id);
+                        @Param("id") Long id);
 }
