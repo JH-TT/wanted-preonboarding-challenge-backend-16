@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicInsert;
 
 @Entity
@@ -82,7 +83,7 @@ public class PerformanceSeatInfo {
 
     // 현재 좌석이 매진되었는가
     public boolean reservationEnable() {
-        return "enable".equals(isReserve);
+        return StringUtils.equals("enable", isReserve);
     }
 
     public void updatePerformance(Performance performance) {
