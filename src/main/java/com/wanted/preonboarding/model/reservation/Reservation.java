@@ -9,13 +9,13 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +25,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
@@ -34,7 +33,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Builder
 @ToString
 @Table(indexes = @Index(name = "idx_performance_id", columnList = "performance_id"))
-@SQLRestriction("deleted_at IS NULL")
 public class Reservation extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,6 +55,8 @@ public class Reservation extends BaseEntity {
     private ReservationStatus status;
     @ElementCollection
     private List<String> salesList = new ArrayList<>();
+    @Column
+    private String refundSeats; // 환불하게 되면 남는 좌석 정보
 
     public static Reservation toEntity(ReservationRequest request) {
         return Reservation.builder()
@@ -73,6 +73,18 @@ public class Reservation extends BaseEntity {
     public void reserveSeat(PerformanceSeatInfo seatInfo) {
         this.seats.add(seatInfo);
         seatInfo.reserveSuccess(this); // 좌석을 예약 처리
+    }
+
+    // 좌석과의 관계 삭제
+    public void refund(ReservationStatus status) {
+        refundSeats = String.join(", ", this.getReservedSeats());
+        // 좌석들 예약과 연관관계 삭제
+        for (PerformanceSeatInfo seat : seats) {
+            seat.refundSeat();
+        }
+        this.status = status;
+        deletedAt = LocalDateTime.now();
+        seats = new ArrayList<>();
     }
 
     // 예약한 좌석을 가져온다.

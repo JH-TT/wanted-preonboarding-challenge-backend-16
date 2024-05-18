@@ -81,6 +81,12 @@ public class PerformanceSeatInfo {
         this.reservation = reservation;
     }
 
+    // 환불
+    public void refundSeat() {
+        this.isReserve = "enable";
+        this.reservation = null;
+    }
+
     // 현재 좌석이 매진되었는가
     public boolean reservationEnable() {
         return StringUtils.equals("enable", isReserve);

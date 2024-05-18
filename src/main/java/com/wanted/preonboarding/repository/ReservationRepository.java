@@ -14,15 +14,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
-    @Query("select r from Reservation r where r.name = :userName and r.phoneNumber = :phoneNumber")
+    @Query("select r from Reservation r where r.name = :userName and r.phoneNumber = :phoneNumber and r.deletedAt is null")
     List<Reservation> findAllByUserNameAndPhoneNumber(@Param("userName") String userName,
                                                       @Param("phoneNumber") String phoneNumber);
-    Optional<Reservation> findById(Long id);
-    long countByNameAndPhoneNumber(String name, String phoneNumber);
 
-    @Modifying
-    @Query("UPDATE Reservation r SET r.status = :status, r.deletedAt = :deleteTime WHERE r.id = :id")
-    void softDeleteById(@Param("status") ReservationStatus status,
-                        @Param("deleteTime") LocalDateTime deleteTime,
-                        @Param("id") Long id);
+    @Query("select r from Reservation r where r.id = :id and r.deletedAt is null")
+    Optional<Reservation> findByIdNotNull(@Param("id") Long id);
+
+    @Query("select r from Reservation r where r.id = :id")
+    Optional<Reservation> findById(@Param("id") Long id);
+
+    // 첫 결제인지 알아보는 쿼리인데 신청했다가 취소한 경우는 첫결제 혜택을 다시 받지 못한다.
+    @Query("select count(r) from Reservation r where r.name = :name and r.phoneNumber = :phoneNumber")
+    long countByNameAndPhoneNumber(@Param("name") String name,
+                                   @Param("phoneNumber") String phoneNumber);
 }
