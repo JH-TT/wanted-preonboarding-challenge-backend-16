@@ -76,13 +76,17 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationList.stream().map(ReservationResponse::of).collect(Collectors.toList());
     }
 
+    /**
+     * status: 활성, 취소, 공연취소
+     * @param id
+     * @param status
+     */
     @Override
     public void deleteReservation(long id, ReservationStatus status) {
-        reservationRepository.findById(id).orElseThrow(
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 예약이 없습니다.")
         );
-        reservationRepository.softDeleteById(status, LocalDateTime.now(), id);
-        performanceSeatInfoRepository.deleteByReservationId(id);
+        reservation.refund(status);
     }
 
 
@@ -90,7 +94,7 @@ public class ReservationServiceImpl implements ReservationService {
         long countReservation = reservationRepository.countByNameAndPhoneNumber(
                 request.getUserName(), request.getPhoneNumber()); // 지금까지 결제한 횟수
         // 총 금액 계산하기
-        ArrayList<String> salesList = new ArrayList<>();
+        List<String> salesList = new ArrayList<>();
         request.payable(DiscountUtils.pay(countReservation, price, startDate, now, salesList), salesList);
     }
 }
