@@ -22,9 +22,9 @@ public class ReservationRequest {
 
     // 좌석 정보(입장 게이트, 좌석 열, 좌석 행)
     private List<PerformanceSeat> seatList = new ArrayList<>();
-    private ArrayList<String> salesList;
+    private List<String> salesList = new ArrayList<>();
 
-    public void payable(long price, ArrayList<String> salesList) {
+    public void payable(long price, List<String> salesList) {
         if (balance < price) {
             throw new IllegalArgumentException("잔액이 부족합니다.");
         }
