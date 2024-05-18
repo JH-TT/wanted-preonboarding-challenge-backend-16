@@ -4,6 +4,7 @@ package com.wanted.preonboarding.model.reservation;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.wanted.preonboarding.Enum.ReservationStatus;
 import com.wanted.preonboarding.dto.reservation.ReservationRequest;
 import com.wanted.preonboarding.dto.reservation.ReservationResponse;
 import com.wanted.preonboarding.dto.reservation.ReservationUserInfo;
@@ -253,7 +254,7 @@ class ReservationTest {
         System.out.println(reserve);
 
         // then
-        Reservation reservation = reservationRepository.findById(reserve.getReservationId())
+        Reservation reservation = reservationRepository.findByIdNotNull(reserve.getReservationId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 예약이 없습니다."));
         //좌석이 3자리여야 한다.
         List<String> seats = reservation.getReservedSeats();
@@ -271,9 +272,9 @@ class ReservationTest {
         assertThat(seatInfo3.getIsReserve()).isEqualTo("disable");
     }
 
-    @DisplayName("삭제 테스트")
+    @DisplayName("예약 취소 테스트")
     @Test
-    public void 삭제_테스트() throws Exception {
+    public void 예약_취소_테스트() throws Exception {
         // given
         Performance performance = getSamplePerformance(PERFORMANCE_NAME, 20000, 1, 0, LocalDateTime.now().plusDays(1), "enable"); // 게르테나 미술관 전시회 정보
         Performance savedPerformance = performanceRepository.save(performance);
@@ -286,12 +287,33 @@ class ReservationTest {
 
         ReservationRequest reservationRequest = getReservationRequest(savedPerformance.getId(),
                 savedPerformance.getName(), 100000, false);
-        ReservationResponse reserve = reservationService.reserve(reservationRequest);
 
         // when
-//        reservationService.deleteReservation();
+        ReservationResponse reserve = reservationService.reserve(reservationRequest); // 일단 한 자리 예약
+        Reservation reservation = reservationRepository.findById(reserve.getReservationId()).get();
+        PerformanceSeatInfo seatInfo1 = performanceSeatInfoRepository.findPerformanceSeatInfo(savedPerformance, 1, "A", 1)
+                .orElseThrow(() -> new IllegalArgumentException("좌석이 없습니다."));
 
         // then
+        assertThat(seatInfo1.reservationEnable()).isFalse(); // 당연히 현재는 예약이 됐다.
+
+        // 취소 진행
+        System.out.println("==== 취소 이전 =====");
+        System.out.println(reservation);
+        System.out.println(reservation.getSeats());
+        System.out.println(reservation.getRefundSeats());
+        reservationService.deleteReservation(reservation.getId(), ReservationStatus.CANCEL);
+        System.out.println("==== 취소 이후 =====");
+        Reservation reservation1 = reservationRepository.findById(reservation.getId()).get();
+        PerformanceSeatInfo seatInfo2 = performanceSeatInfoRepository.findPerformanceSeatInfo(savedPerformance, 1, "A", 1)
+                .orElseThrow(() -> new IllegalArgumentException("좌석이 없습니다."));
+        System.out.println(reservation1);
+        System.out.println(reservation1.getSeats());
+        System.out.println(reservation1.getRefundSeats());
+
+        assertThat(seatInfo2.reservationEnable()).isTrue(); // 다시 예약 가능
+        assertThat(reservation1.getSalesList().size()).isEqualTo(0); // 예약된 좌석이 없다.
+        assertThat(reservation1.getRefundSeats().length()).isGreaterThan(0); // 당연히 길이도 0보다 크다.
     }
 
     @DisplayName("좌석 영속성 테스트")
