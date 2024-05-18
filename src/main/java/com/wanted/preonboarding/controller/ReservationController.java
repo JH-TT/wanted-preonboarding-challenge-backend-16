@@ -28,6 +28,7 @@ public class ReservationController {
     // 좌석을 여러개 예약할 수 있다.
     @PostMapping("/{id}")
     public ReservationResponse reserve(@PathVariable("id") UUID performanceId, @RequestBody ReservationRequest request) {
+        log.info("reserve 실행");
         request.setPerformId(performanceId);
         return reservationService.reserve(request);
     }
