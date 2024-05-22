@@ -1,12 +1,10 @@
 package com.wanted.preonboarding.repository;
 
-import com.wanted.preonboarding.Enum.ReservationStatus;
 import com.wanted.preonboarding.model.reservation.Reservation;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,6 +21,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 
     @Query("select r from Reservation r where r.id = :id")
     Optional<Reservation> findById(@Param("id") Long id);
+
+    @Query("select r from Reservation r where r.performanceId = :performanceId")
+    List<Reservation> findByPerformanceId(@Param("performanceId") UUID performanceId);
 
     // 첫 결제인지 알아보는 쿼리인데 신청했다가 취소한 경우는 첫결제 혜택을 다시 받지 못한다.
     @Query("select count(r) from Reservation r where r.name = :name and r.phoneNumber = :phoneNumber")
