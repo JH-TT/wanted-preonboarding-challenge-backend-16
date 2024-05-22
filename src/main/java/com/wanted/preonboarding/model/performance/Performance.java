@@ -5,7 +5,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -19,7 +18,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
@@ -28,7 +26,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString
-@SQLRestriction("deleted_at IS NULL")
 public class Performance extends BaseEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -52,6 +49,9 @@ public class Performance extends BaseEntity {
     @Builder.Default
     private List<PerformanceSeatInfo> seats = new ArrayList<>();
 
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
+
     public void registerSeat(PerformanceSeatInfo seatInfo) {
         this.seats.add(seatInfo);
         seatInfo.updatePerformance(this);
@@ -67,5 +67,10 @@ public class Performance extends BaseEntity {
     // 예약 가능 좌석 가져오기
     public long getPerformanceSeatsCount() {
         return seats.stream().filter(PerformanceSeatInfo::reservationEnable).count();
+    }
+
+    public void cancel() {
+        this.isReserve = "disable";
+        this.deletedAt = LocalDateTime.now();
     }
 }
