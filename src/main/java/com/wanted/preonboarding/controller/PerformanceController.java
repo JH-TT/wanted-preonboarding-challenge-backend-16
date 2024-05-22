@@ -7,11 +7,14 @@ import com.wanted.preonboarding.model.performance.Performance;
 import com.wanted.preonboarding.repository.PerformanceRepository;
 import com.wanted.preonboarding.service.performance.PerformanceService;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,5 +45,13 @@ public class PerformanceController {
         log.info("request : {}", request);
         // 해당 정보를 Service로 넘기고 좌석정보를 받는다.
         return performanceService.getSeats(request);
+    }
+
+    // 공연이 취소되는 경우
+    @DeleteMapping("/{id}")
+    public void performanceCancel(@PathVariable("id") UUID performanceId) {
+        log.info("start method : performanceCancel");
+        log.info("performance Id : " + performanceId);
+
     }
 }
