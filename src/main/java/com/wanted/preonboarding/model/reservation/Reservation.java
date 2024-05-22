@@ -58,6 +58,9 @@ public class Reservation extends BaseEntity {
     @Column
     private String refundSeats; // 환불하게 되면 남는 좌석 정보
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     public static Reservation toEntity(ReservationRequest request) {
         return Reservation.builder()
                 .performanceId(request.getPerformId())
