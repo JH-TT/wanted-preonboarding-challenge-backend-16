@@ -1,17 +1,10 @@
 package com.wanted.preonboarding.place.service;
 
-import com.wanted.preonboarding.exception.DetailedException;
-import com.wanted.preonboarding.exception.DuplicateDataException;
 import com.wanted.preonboarding.place.dto.PlaceInfo;
 import com.wanted.preonboarding.place.model.Place;
 import com.wanted.preonboarding.place.repository.PlaceRepository;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -27,6 +20,10 @@ public class PlaceService {
     }
 
     public PlaceInfo getPlace(Long id) {
-        return placeRepository.findByPlaceId(id);
+        PlaceInfo byPlaceId = placeRepository.findByPlaceId(id);
+        if (byPlaceId == null) {
+            throw new IllegalArgumentException("등록되지 않은 장소입니다. 장소아이디: " + id);
+        }
+        return byPlaceId;
     }
 }

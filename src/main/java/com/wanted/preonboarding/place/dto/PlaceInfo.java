@@ -12,8 +12,6 @@ public class PlaceInfo {
     private String address;
     private String phoneNumber;
 
-
-
     public PlaceInfo(String name, String address, String phoneNumber) {
         this.name = name;
         this.address = address;

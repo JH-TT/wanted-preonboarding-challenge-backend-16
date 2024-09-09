@@ -43,4 +43,15 @@ public class Seat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id")
     private Place placeId;
+
+    public static Seat of(String line, Integer seat) {
+        return Seat.builder()
+                .floor(1)
+                .line(line)
+                .seat(seat).build();
+    }
+
+    public void enrollPlace(Place place) {
+        this.placeId = place;
+    }
 }
