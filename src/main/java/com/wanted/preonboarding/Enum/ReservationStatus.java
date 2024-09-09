@@ -4,16 +4,22 @@ import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 
 public enum ReservationStatus {
-    ACTIVE("active"),
-    INACTIVE("inactive"),
-    CANCEL("cancel"),
-    PERFORMANCE_CANCEL("performance_cancel"),
-    EMPTY("Nothing");
+    ACTIVE("유효", false),
+    INACTIVE("만료", true),
+    CANCEL("예약 취소", true),
+    PERFORMANCE_CANCEL("공연 취소", true),
+    EMPTY("Nothing", true);
 
     private final String typeDesc;
+    private final boolean isDeleted;
 
-    ReservationStatus(String typeDesc) {
+    ReservationStatus(String typeDesc, boolean isDeleted) {
         this.typeDesc = typeDesc;
+        this.isDeleted = isDeleted;
+    }
+
+    public boolean getIsDeleted() {
+        return isDeleted;
     }
 
     public static ReservationStatus getType(String typeDesc) {

@@ -18,10 +18,22 @@ spring:
         globally_quoted_identifiers: false
         format_sql: true     # 쿼리 로그 포맷 (정렬)
         show_sql: true       # 쿼리 로그 출력
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: leejongho9803@gmail.com
+    password: ckak jmvp fzbg fumd
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
 
 logging:
   level:
     org:
+#      springframework: trace
       hibernate:
         type:
           descriptor:

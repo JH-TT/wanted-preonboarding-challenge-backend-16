@@ -1,15 +1,21 @@
 package com.wanted.preonboarding.performance.model;
 
+import com.wanted.preonboarding.Enum.PerformanceStatus;
+import com.wanted.preonboarding.Enum.PerformanceType;
 import com.wanted.preonboarding.model.BaseEntity;
-import com.wanted.preonboarding.seat.model.PerformanceSeatInfo;
+import com.wanted.preonboarding.place.model.Place;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -18,6 +24,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -29,51 +36,42 @@ import lombok.ToString;
 public class Performance extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "performance_id")
     private Long id;
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
-    @Column(name = "price", nullable = false)
-    private int price;
-    @Column(name = "round", nullable = false)
-    private int round;
 
     /**
      *  0: 공연
      *  1: 전시회
      */
-    @Column(name = "type", nullable = false)
+    @Column(nullable = false)
     private int type;
-    @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
-    @Column(name = "is_reserve", nullable = false, columnDefinition = "VARCHAR(255) default 'disable'")
-    private String isReserve;
 
-    @OneToMany(mappedBy = "performance")
-    @Builder.Default
-    private List<PerformanceSeatInfo> seats = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'BEFORE'")
+    @Column(nullable = false)
+    private PerformanceStatus status;
 
-    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
-    private LocalDateTime deletedAt;
+    @Column(nullable = false)
+    private String startDate;
 
-    public void registerSeat(PerformanceSeatInfo seatInfo) {
-        this.seats.add(seatInfo);
-        seatInfo.updatePerformance(this);
-        updateIsReservation(); // 좌석이 꽉 찼는지 확인한다
-    }
+    @Column(nullable = false)
+    private String endDate;
 
-    private void updateIsReservation() {
-        if (getPerformanceSeatsCount() == 0) {
-            this.isReserve = "disable";
-        }
-    }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "place_id")
+    private Place placeId; // 장소
 
-    // 예약 가능 좌석 가져오기
-    public long getPerformanceSeatsCount() {
-        return seats.stream().filter(PerformanceSeatInfo::reservationEnable).count();
-    }
+    // 상영시간 분단위
+    @Column(nullable = false)
+    private int runtime;
 
-    public void cancel() {
-        this.isReserve = "disable";
-        this.deletedAt = LocalDateTime.now();
+    // 예약 시작 날짜 (디폴트: 1달 전부터)
+    @Column
+    private String bookableDate;
+
+    public String getType() {
+        return PerformanceType.getTypeDesc(type);
     }
 }

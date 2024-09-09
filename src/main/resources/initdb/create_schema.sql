@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS `performance`
     `start_date` datetime                                 NOT NULL COMMENT '공연 일시',
     `is_reserve` varchar(255)                             NOT NULL DEFAULT 'disable',
     `created_at` DATETIME   DEFAULT NOW()                 NOT NULL,
-    `updated_at` DATETIME   DEFAULT NOW()                 NOT NUll,
+    `updated_at` DATETIME                                         ,
+    `deleted_at` DATETIME
     PRIMARY KEY (id),
     UNIQUE KEY (id, round)
 );
@@ -23,8 +24,6 @@ CREATE TABLE IF NOT EXISTS `performance_seat_info`
     `line`           CHAR(2)                NOT NULL COMMENT '좌석 열',
     `seat`           INT                    NOT NULL COMMENT '좌석 행',
     `is_reserve`     varchar(255)           NOT NULL default 'enable',
-    `created_at`     DATETIME DEFAULT NOW() NOT NULL,
-    `updated_at`     DATETIME DEFAULT NOW() NOT NUll,
     PRIMARY KEY (id),
     UNIQUE KEY performance_seat_info_unique (performance_id, round, `line`, seat)
 );

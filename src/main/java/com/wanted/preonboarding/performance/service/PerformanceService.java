@@ -1,14 +1,22 @@
 package com.wanted.preonboarding.performance.service;
 
 import com.wanted.preonboarding.performance.dto.PerformanceInfo;
-import com.wanted.preonboarding.performance.dto.PerformanceInfoRequest;
-import com.wanted.preonboarding.seat.dto.PerformanceSeat;
+import com.wanted.preonboarding.performance.model.Performance;
+import com.wanted.preonboarding.performance.repository.PerformanceRepository;
 import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface PerformanceService {
-    List<PerformanceSeat> getSeats(PerformanceInfoRequest request);
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class PerformanceService {
+    private final PerformanceRepository performanceRepository;
 
-    void performanceCancel(Long id);
-
-    void add(PerformanceInfo performanceInfo);
+    public List<PerformanceInfo> getList() {
+        return performanceRepository.findAll().stream().map(PerformanceInfo::of)
+                .collect(Collectors.toList());
+    }
 }

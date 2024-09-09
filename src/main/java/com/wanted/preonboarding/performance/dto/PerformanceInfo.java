@@ -1,6 +1,7 @@
 package com.wanted.preonboarding.performance.dto;
 
 import com.wanted.preonboarding.performance.model.Performance;
+import com.wanted.preonboarding.place.model.Place;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,22 +11,18 @@ import lombok.Setter;
 @Builder
 public class PerformanceInfo {
     private String name; // 공연명
-    private long performanceId; // 공연/전시회 ID
-    private int round; // 회차
-    private int type; // 공연인지 전시회 인지
+    private Place place; // 장소
+    private String type; // 공연인지 전시회 인지
     private String startDate; // 시작 일시
-    private String isReserve; // 예매 가능 여부
-    private long remainSeat; // 남은 좌석의 수
+    private String endDate; // 마지막 공연 날짜
 
-    public static PerformanceInfo of(Performance perform) {
+    public static PerformanceInfo of(Performance p) {
         return PerformanceInfo.builder()
-                .name(perform.getName())
-                .performanceId(perform.getId())
-                .round(perform.getRound())
-                .type(perform.getType())
-                .startDate(perform.getStartDate().toString())
-                .isReserve(perform.getIsReserve())
-                .remainSeat(perform.getPerformanceSeatsCount())
+                .name(p.getName())
+                .place(p.getPlaceId())
+                .type(p.getType())
+                .startDate(p.getStartDate())
+                .endDate(p.getEndDate())
                 .build();
     }
 }
