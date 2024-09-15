@@ -3,6 +3,7 @@ package com.wanted.preonboarding.seat.service;
 import com.wanted.preonboarding.place.model.Place;
 import com.wanted.preonboarding.place.repository.PlaceRepository;
 import com.wanted.preonboarding.seat.dto.EnrollInfo;
+import com.wanted.preonboarding.seat.dto.SeatInfo;
 import com.wanted.preonboarding.seat.model.Seat;
 import com.wanted.preonboarding.seat.repository.PerformanceSeatInfoRepository;
 import java.util.ArrayList;
@@ -21,23 +22,25 @@ public class SeatService {
     private final PlaceRepository placeRepository;
 
     @Transactional
-    public void enrollSeats(Long placeId, EnrollInfo info) {
+    public List<SeatInfo> enrollSeats(Long placeId, EnrollInfo info) {
         Place place = placeRepository.findById(placeId).orElseThrow(
                 () -> new IllegalArgumentException("Place not found\n Place Id=" + placeId)
         );
         List<Seat> seatList = new ArrayList<>();
         for (int i = 0; i < info.getLines(); i++) {
             String line = String.valueOf(ALPHABET.charAt(i));
-            for (int j = 0; j < info.getSeats(); j++) {
+            for (int j = 1; j <= info.getSeats(); j++) {
                 Seat seat = Seat.of(line, j);
                 seat.enrollPlace(place);
                 seatList.add(seat);
             }
         }
-        performanceSeatInfoRepository.saveAll(seatList);
+        return performanceSeatInfoRepository.saveAll(seatList).stream()
+                .map(SeatInfo::of).toList();
     }
 
-    public List<Seat> findByPlaceId(Long placeId) {
-        return performanceSeatInfoRepository.findByPlaceId(placeId);
+    public List<SeatInfo> findByPlaceId(Long placeId) {
+        return performanceSeatInfoRepository.findByPlaceId(placeId).stream()
+                .map(SeatInfo::of).toList();
     }
 }
